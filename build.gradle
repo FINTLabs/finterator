@@ -1,0 +1,52 @@
+plugins {
+	id 'org.springframework.boot' version '2.7.5'
+	id 'io.spring.dependency-management' version '1.0.15.RELEASE'
+	id 'java'
+}
+
+group = 'no.fintlabs'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '17'
+
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+}
+
+repositories {
+	mavenCentral()
+	repositories {
+		maven {
+			url "https://repo.fintlabs.no/releases"
+		}
+	}
+}
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter'
+	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+
+	annotationProcessor 'io.javaoperatorsdk:operator-framework:4.0.1'
+	implementation "io.javaoperatorsdk:operator-framework-spring-boot-starter:3.2.0"
+	annotationProcessor 'io.fabric8:crd-generator-apt:6.1.1'
+
+	implementation 'org.springframework.kafka:spring-kafka'
+	implementation 'no.fintlabs:fint-kafka:2.3.0'
+
+	compileOnly 'org.projectlombok:lombok'
+
+	runtimeOnly 'io.micrometer:micrometer-registry-prometheus'
+
+	annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
+	annotationProcessor 'org.projectlombok:lombok'
+
+	testImplementation 'cglib:cglib-nodep:3.3.0'
+	testImplementation 'org.spockframework:spock-spring:2.3-groovy-3.0'
+	testImplementation 'org.spockframework:spock-core:2.3-groovy-3.0'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}

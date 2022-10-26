@@ -1,0 +1,18 @@
+apiVersion: fintlabs.no/v1alpha1
+kind: FintClient
+metadata:
+  name: fint-test-client
+  labels:
+    app.kubernetes.io/name: test-adapter
+    app.kubernetes.io/instance: test-adapter_rogfk_no
+    app.kubernetes.io/version: latest
+    app.kubernetes.io/component: adapter
+    app.kubernetes.io/part-of: arkiv
+    fintlabs.no/team: flais
+spec:
+  orgId: rogfk_no
+  note: Dette er en test client
+  shortDescription: Test client
+  components:
+    - utdanning_elev
+    - administrasjon_kodeverk
