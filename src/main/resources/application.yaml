@@ -1,1 +1,14 @@
 
+fint:
+  application-id: finterator
+  kafka:
+    topic:
+      org-id: fintlabs.no
+      domain-context: flais
+    application-id: ${fint.application-id}
+    enable-ssl: true
+
+spring:
+  kafka:
+    consumer:
+      group-id: finterator

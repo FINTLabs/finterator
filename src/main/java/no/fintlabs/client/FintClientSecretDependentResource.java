@@ -32,8 +32,8 @@ public class FintClientSecretDependentResource
 
         log.debug("Desired secret for {}", resource.getMetadata().getName());
 
-        Optional<FintClient> fileShare = context.getSecondaryResource(FintClient.class);
-        FintClient azureFintClient = fileShare.orElseThrow();
+        FintClient fintClient = context.getSecondaryResource(FintClient.class).orElseThrow();
+        //FintClient fintClient = fileShare.orElseThrow();
 
         HashMap<String, String> labels = new HashMap<>(resource.getMetadata().getLabels());
 
@@ -45,8 +45,10 @@ public class FintClientSecretDependentResource
                 .withLabels(labels)
                 .endMetadata()
                 .withStringData(new HashMap<>() {{
-                    //put("fint.azure.storage-account.connection-string", azureFintClient.getConnectionString());
-                    //put("fint.azure.storage-account.file-share.name", azureFintClient.getShareName());
+                    put("fint.core.oauth2.username", fintClient.getUsername());
+                    put("fint.core.oauth2.password", fintClient.getPassword());
+                    put("fint.core.oauth2.client-id", fintClient.getClientId());
+                    put("fint.core.oauth2.client-secret", fintClient.getClientSecret());
                 }})
                 .build();
 
