@@ -1,7 +1,7 @@
 package no.fintlabs.client;
 
 import lombok.*;
-import no.fintlabs.FintSpec;
+import no.fintlabs.FlaisSpec;
 
 import java.util.Collections;
 import java.util.List;
@@ -11,7 +11,7 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class FintClientSpec implements FintSpec {
+public class FintClientSpec implements FlaisSpec {
 
     private String orgId;
     private String note;

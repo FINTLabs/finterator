@@ -8,7 +8,6 @@ import no.fintlabs.client.producers.ClientRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
-import java.util.Optional;
 import java.util.Set;
 
 @Slf4j
@@ -59,6 +58,5 @@ public class FintClientService {
                 .name(fintClient.getUsername())
                 .orgId(fintClient.getOrgId())
                 .build());
-        //storageAccountService.delete(fintClient);
     }
 }

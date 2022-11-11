@@ -1,9 +1,9 @@
 package no.fintlabs.client;
 
-import io.javaoperatorsdk.operator.processing.dependent.workflow.builder.WorkflowBuilder;
+import no.fintlabs.FlaisWorkflow;
 import org.springframework.stereotype.Component;
 
 @Component
-public class FintClientWorkflow extends WorkflowBuilder<FintClientCrd> {
+public class FintClientWorkflow extends FlaisWorkflow<FintClientCrd, FintClientSpec> {
 
 }
