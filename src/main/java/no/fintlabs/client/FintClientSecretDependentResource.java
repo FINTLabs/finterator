@@ -4,24 +4,22 @@ import io.fabric8.kubernetes.api.model.Secret;
 import io.fabric8.kubernetes.api.model.SecretBuilder;
 import io.fabric8.kubernetes.client.KubernetesClient;
 import io.javaoperatorsdk.operator.api.reconciler.Context;
-import io.javaoperatorsdk.operator.processing.dependent.Matcher;
-import io.javaoperatorsdk.operator.processing.dependent.kubernetes.CRUDKubernetesDependentResource;
 import io.javaoperatorsdk.operator.processing.dependent.kubernetes.KubernetesDependent;
 import lombok.extern.slf4j.Slf4j;
+import no.fintlabs.FlaisKubernetesDependentResource;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
-import java.util.Optional;
 
 @Slf4j
 @Component
 @KubernetesDependent(labelSelector = "app.kubernetes.io/managed-by=flaiserator")
 public class FintClientSecretDependentResource
-        extends CRUDKubernetesDependentResource<Secret, FintClientCrd> {
+        extends FlaisKubernetesDependentResource<Secret, FintClientCrd, FintClientSpec> {
 
     public FintClientSecretDependentResource(FintClientWorkflow workflow, FintClientDependentResource fintClientDependentResource, KubernetesClient kubernetesClient) {
 
-        super(Secret.class);
+        super(Secret.class, workflow, kubernetesClient);
         workflow.addDependentResource(this).dependsOn(fintClientDependentResource);
         client = kubernetesClient;
     }
@@ -33,7 +31,6 @@ public class FintClientSecretDependentResource
         log.debug("Desired secret for {}", resource.getMetadata().getName());
 
         FintClient fintClient = context.getSecondaryResource(FintClient.class).orElseThrow();
-        //FintClient fintClient = fileShare.orElseThrow();
 
         HashMap<String, String> labels = new HashMap<>(resource.getMetadata().getLabels());
 
@@ -53,12 +50,5 @@ public class FintClientSecretDependentResource
                 .build();
 
 
-    }
-
-    // TODO: 18/10/2022 Need to improve matching
-    @Override
-    public Matcher.Result<Secret> match(Secret actual, FintClientCrd primary, Context<FintClientCrd> context) {
-        final var desiredSecretName = primary.getMetadata().getName();
-        return Matcher.Result.nonComputed(actual.getMetadata().getName().equals(desiredSecretName));
     }
 }

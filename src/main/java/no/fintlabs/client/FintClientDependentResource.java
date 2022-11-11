@@ -1,11 +1,8 @@
 package no.fintlabs.client;
 
 import io.javaoperatorsdk.operator.api.reconciler.Context;
-import io.javaoperatorsdk.operator.api.reconciler.dependent.Deleter;
-import io.javaoperatorsdk.operator.api.reconciler.dependent.EventSourceProvider;
-import io.javaoperatorsdk.operator.processing.dependent.Creator;
-import io.javaoperatorsdk.operator.processing.dependent.external.PerResourcePollingDependentResource;
 import lombok.extern.slf4j.Slf4j;
+import no.fintlabs.FlaisExternalDependentResource;
 import org.springframework.stereotype.Component;
 
 import java.time.Duration;
@@ -15,19 +12,17 @@ import java.util.Set;
 @Slf4j
 @Component
 public class FintClientDependentResource
-        extends PerResourcePollingDependentResource<FintClient, FintClientCrd>
-        implements EventSourceProvider<FintClientCrd>,
-        Creator<FintClient, FintClientCrd>,
-        Deleter<FintClientCrd> {
+        extends FlaisExternalDependentResource<FintClient, FintClientCrd, FintClientSpec> {
 
 
     private final FintClientService fintClientService;
 
     public FintClientDependentResource(FintClientWorkflow workflow,
                                        FintClientService fintClientService) {
-        super(FintClient.class, Duration.ofMinutes(10).toMillis());
+        super(FintClient.class, workflow);
         this.fintClientService = fintClientService;
         workflow.addDependentResource(this);
+        setPollingPeriod(Duration.ofMinutes(10).toMillis());
     }
 
     @Override
@@ -36,8 +31,6 @@ public class FintClientDependentResource
         log.debug("\t{}", primary);
 
         return FintClient.builder()
-                //.resourceGroup(primary.getSpec().getResourceGroup())
-                //.storageAccountName(primary.getMetadata().getName())
                 .build();
     }
 
@@ -63,4 +56,6 @@ public class FintClientDependentResource
     public Set<FintClient> fetchResources(FintClientCrd primaryResource) {
         return fintClientService.get(primaryResource);
     }
+
+
 }
