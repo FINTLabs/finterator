@@ -9,6 +9,7 @@ import no.fintlabs.FlaisExternalDependentResource;
 import no.fintlabs.SecretService;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.SerializationUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.time.Duration;
@@ -25,6 +26,10 @@ public class FintClientDependentResource
 
 
     public static final String ANNOTATION_CLIENT_DN = "flais.io/client-dn";
+
+    @Value("${fint.application-id}")
+    private String applicationId;
+
     private final FintClientRepository fintClientRepository;
     private final SecretService secretService;
 
@@ -54,12 +59,12 @@ public class FintClientDependentResource
 
     private Supplier<Client> handleDesiredOnNew(FintClientCrd primary) {
         return () -> {
-
+            String clientName = String.format("%s-%s", primary.getMetadata().getName(), RandomStringUtils.randomAlphabetic(5).toLowerCase());
             Client client = Client
                     .builder()
-                    .name(String.format("%s-%s", primary.getMetadata().getName(), RandomStringUtils.randomAlphabetic(5).toLowerCase()))
-                    .shortDescription("Denne klienten er automatisk opprettet.")
-                    .note(primary.getSpec().getNote())
+                    .name(clientName)
+                    .shortDescription(clientName)
+                    .note(generateNote(primary))
                     .publicKey(secretService.getPublicKeyString())
                     .isManaged(true)
                     .build();
@@ -71,12 +76,16 @@ public class FintClientDependentResource
         };
     }
 
-    private static Function<Client, Client> handleDesiredForExisting(FintClientCrd primary) {
+    private String generateNote(FintClientCrd primary) {
+        return String.format("%s\n\n%s%s", primary.getSpec().getNote(), "Denne klienten er automatisk opprettet og håndteres av ", applicationId.toUpperCase());
+    }
+
+    private Function<Client, Client> handleDesiredForExisting(FintClientCrd primary) {
         return currentClient -> {
             log.info("Found client {} in event store", currentClient.getDn());
 
             Client desiredClient = SerializationUtils.clone(currentClient);
-            desiredClient.setNote(primary.getSpec().getNote());
+            desiredClient.setNote(generateNote(primary));
             desiredClient.getComponents().clear();
             desiredClient.setManaged(true);
             primary.getSpec().getComponents()

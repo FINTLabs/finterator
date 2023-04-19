@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: finterator
+spec:
+  replicas: 1
+  template:
+    metadata:
+      annotations:
+        prometheus.io/path: /actuator/prometheus
+        prometheus.io/port: "8080"
+        prometheus.io/scrape: "true"
+    spec:
+      serviceAccountName: finterator
+      securityContext:
+        {}
+      containers:
+        - name: finterator
+          securityContext:
+            {}
+          image: "ghcr.io/fintlabs/finterator:sha-0000000"
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: logging.level.no.fintlabs
+              value: DEBUG
+          envFrom:
+            - secretRef:
+                name: finterator
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          # livenessProbe:
+          #   httpGet:
+          #     path: /actuator/health
+          #     port: http
+          # readinessProbe:
+          #   httpGet:
+          #     path: /
+          #     port: http
+          resources:
+            limits:
+              memory: 512Mi
+              cpu: 500m
+            requests:
+              memory: 256Mi
+              cpu: 250m

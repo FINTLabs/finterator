@@ -14,8 +14,8 @@ metadata:
 
 spec:
   orgId: fintlabs.no
-  note: Dette er en test. Igjen!
+  note: Dette er en test. Jævlar, nu kjør vi!!
   components:
     - administrasjon_personal
-   # - utdanning_elev
+    - utdanning_elev
 
