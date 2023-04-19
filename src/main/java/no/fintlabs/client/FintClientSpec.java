@@ -15,7 +15,6 @@ public class FintClientSpec implements FlaisSpec {
 
     private String orgId;
     private String note;
-    private String shortDescription;
     private List<String> components = Collections.emptyList();
 
 }

@@ -1,14 +1,27 @@
-
+server:
+  port: 8081
 fint:
   application-id: finterator
   kafka:
     topic:
-      org-id: fintlabs.no
+      org-id: flais.io
       domain-context: flais
     application-id: ${fint.application-id}
-    enable-ssl: true
+    enable-ssl: false
+    default-replicas: 1
 
 spring:
   kafka:
     consumer:
       group-id: finterator
+
+  jackson:
+    default-property-inclusion: non_null
+
+
+logging:
+  level:
+    org.apache.kafka: OFF
+    no.fintlabs.kafka: OFF
+    org.springframework.kafka: OFF
+    no.fintlabs: DEBUG
