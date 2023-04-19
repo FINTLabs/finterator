@@ -7,11 +7,14 @@ import io.javaoperatorsdk.operator.processing.dependent.Updater;
 import lombok.extern.slf4j.Slf4j;
 import no.fintlabs.FlaisExternalDependentResource;
 import no.fintlabs.SecretService;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.SerializationUtils;
 import org.springframework.stereotype.Component;
 
 import java.time.Duration;
 import java.util.Set;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 
 @Slf4j
@@ -45,34 +48,42 @@ public class FintClientDependentResource
 
         return context
                 .getSecondaryResource(Client.class)
-                .map(currentClient -> {
-                    log.info("Found client {} in event store", currentClient.getDn());
+                .map(handleDesiredForExisting(primary))
+                .orElseGet(handleDesiredOnNew(primary));
+    }
 
-                    Client desiredClient = SerializationUtils.clone(currentClient);
-                    desiredClient.setNote(primary.getSpec().getNote());
-                    desiredClient.getComponents().clear();
-                    desiredClient.setManaged(true);
-                    primary.getSpec().getComponents()
-                            .forEach(component -> desiredClient.addComponent(String.format("ou=%s,ou=components,o=fint", component)));
+    private Supplier<Client> handleDesiredOnNew(FintClientCrd primary) {
+        return () -> {
 
-                    return desiredClient;
-                })
-                .orElseGet(() -> {
+            Client client = Client
+                    .builder()
+                    .name(String.format("%s-%s", primary.getMetadata().getName(), RandomStringUtils.randomAlphabetic(5).toLowerCase()))
+                    .shortDescription("Denne klienten er automatisk opprettet.")
+                    .note(primary.getSpec().getNote())
+                    .publicKey(secretService.getPublicKeyString())
+                    .isManaged(true)
+                    .build();
+            primary.getSpec().getComponents()
+                    .forEach(component -> client.addComponent(String.format("ou=%s,ou=components,o=fint", component)));
+            log.info("No client found in event store. Desired client is: {}", client);
 
-                    Client client = Client
-                            .builder()
-                            .name(primary.getMetadata().getName())
-                            .shortDescription("Denne klienten er automatisk opprettet.")
-                            .note(primary.getSpec().getNote())
-                            .publicKey(secretService.getPublicKeyString())
-                            .isManaged(true)
-                            .build();
-                    primary.getSpec().getComponents()
-                            .forEach(component -> client.addComponent(String.format("ou=%s,ou=components,o=fint", component)));
-                    log.info("No client found in event store. Desired client is: {}", client);
+            return client;
+        };
+    }
 
-                    return client;
-                });
+    private static Function<Client, Client> handleDesiredForExisting(FintClientCrd primary) {
+        return currentClient -> {
+            log.info("Found client {} in event store", currentClient.getDn());
+
+            Client desiredClient = SerializationUtils.clone(currentClient);
+            desiredClient.setNote(primary.getSpec().getNote());
+            desiredClient.getComponents().clear();
+            desiredClient.setManaged(true);
+            primary.getSpec().getComponents()
+                    .forEach(component -> desiredClient.addComponent(String.format("ou=%s,ou=components,o=fint", component)));
+
+            return desiredClient;
+        };
     }
 
     @Override
