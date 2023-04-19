@@ -10,6 +10,7 @@ resources:
   - rolebinding.yaml
   - namespace.yaml
   - fintclients.fintlabs.no-v1.yml
+  - kafka.yaml
 commonLabels:
   app.kubernetes.io/name: finterator
   app.kubernetes.io/instance: flais-finterator

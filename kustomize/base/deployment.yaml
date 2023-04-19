@@ -14,10 +14,17 @@ spec:
       serviceAccountName: finterator
       securityContext:
         {}
+      volumes:
+        - name: credentials
+          secret:
+            secretName: finterator-kafka-certificates
       containers:
         - name: finterator
           securityContext:
             {}
+          volumeMounts:
+            - name: credentials
+              mountPath: /credentials
           image: "ghcr.io/fintlabs/finterator:sha-0000000"
           imagePullPolicy: IfNotPresent
           env:
@@ -26,6 +33,8 @@ spec:
           envFrom:
             - secretRef:
                 name: finterator
+            - secretRef:
+                name: finterator-kafka
           ports:
             - name: http
               containerPort: 8080
