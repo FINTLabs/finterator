@@ -51,6 +51,7 @@ public class FintClientDependentResource
                     Client desiredClient = SerializationUtils.clone(currentClient);
                     desiredClient.setNote(primary.getSpec().getNote());
                     desiredClient.getComponents().clear();
+                    desiredClient.setManaged(true);
                     primary.getSpec().getComponents()
                             .forEach(component -> desiredClient.addComponent(String.format("ou=%s,ou=components,o=fint", component)));
 
@@ -64,6 +65,7 @@ public class FintClientDependentResource
                             .shortDescription("Denne klienten er automatisk opprettet.")
                             .note(primary.getSpec().getNote())
                             .publicKey(secretService.getPublicKeyString())
+                            .isManaged(true)
                             .build();
                     primary.getSpec().getComponents()
                             .forEach(component -> client.addComponent(String.format("ou=%s,ou=components,o=fint", component)));

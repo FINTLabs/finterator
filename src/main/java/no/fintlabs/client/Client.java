@@ -21,6 +21,10 @@ public final class Client implements Serializable {
     @Getter
     private String name;
 
+    @Setter
+    @Getter
+    private boolean isManaged;
+
     @Getter
     private String shortDescription;
 
