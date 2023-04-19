@@ -6,7 +6,7 @@ patches:
   - patch: |-
       - op: replace
         path: "/spec/itemPath"
-        value: "vaults/aks-alpha-vault/items/pgerator"
+        value: "vaults/aks-alpha-vault/items/finterator"
     target:
       kind: OnePasswordItem
-      name: pgerator
+      name: finterator
