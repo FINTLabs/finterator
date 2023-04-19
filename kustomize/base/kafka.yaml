@@ -1,7 +1,7 @@
 apiVersion: "fintlabs.no/v1alpha1"
 kind: KafkaUserAndAcl
 metadata:
-  name: fint-customer-objects-gateway
+  name: finterator
 spec:
   acls:
     - permission: admin
