@@ -38,7 +38,7 @@ public class FintClientDependentResource
         super(Client.class, workflow);
         this.fintClientRepository = fintClientRepository;
         this.secretService = secretService;
-        setPollingPeriod(Duration.ofMinutes(1).toMillis());
+        setPollingPeriod(Duration.ofMinutes(60).toMillis());
     }
 
     @Override
