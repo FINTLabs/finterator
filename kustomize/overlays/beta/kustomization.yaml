@@ -4,4 +4,3 @@ resources:
   - ../../base
 patchesStrategicMerge:
   - exclude-kafka.yaml
-  - exclude-onepassword.yaml
