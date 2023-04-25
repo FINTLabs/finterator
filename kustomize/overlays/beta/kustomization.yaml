@@ -4,3 +4,11 @@ resources:
   - ../../base
 patchesStrategicMerge:
   - exclude-kafka.yaml
+patches:
+  - patch: |-
+      - op: replace
+        path: "/spec/itemPath"
+        value: "vaults/aks-beta-vault/items/finterator"
+    target:
+      kind: OnePasswordItem
+      name: finterator
