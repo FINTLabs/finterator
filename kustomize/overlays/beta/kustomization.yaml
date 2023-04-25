@@ -12,3 +12,12 @@ patches:
     target:
       kind: OnePasswordItem
       name: finterator
+  - patch: |-
+      - op: add
+        path: "/spec/template/spec/containers/0/env/-"
+        value:
+          name: fint.application-id
+          value: finterator-beta
+    target:
+      kind: Deployment
+      name: finterator
