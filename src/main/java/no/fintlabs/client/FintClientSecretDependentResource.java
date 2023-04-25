@@ -4,7 +4,6 @@ import io.fabric8.kubernetes.api.model.Secret;
 import io.fabric8.kubernetes.api.model.SecretBuilder;
 import io.fabric8.kubernetes.client.KubernetesClient;
 import io.javaoperatorsdk.operator.api.reconciler.Context;
-import io.javaoperatorsdk.operator.processing.dependent.kubernetes.KubernetesDependent;
 import io.javaoperatorsdk.operator.processing.dependent.kubernetes.KubernetesDependentResourceConfig;
 import lombok.extern.slf4j.Slf4j;
 import no.fintlabs.FlaisKubernetesDependentResource;
@@ -21,7 +20,10 @@ public class FintClientSecretDependentResource
 
     private final SecretService secretService;
 
-    public FintClientSecretDependentResource(FintClientWorkflow workflow, FintClientDependentResource fintClientDependentResource, SecretService secretService, KubernetesClient kubernetesClient) {
+    public FintClientSecretDependentResource(FintClientWorkflow workflow,
+                                             FintClientDependentResource fintClientDependentResource,
+                                             SecretService secretService,
+                                             KubernetesClient kubernetesClient) {
 
         super(Secret.class, workflow, kubernetesClient);
         this.secretService = secretService;
