@@ -1,0 +1,21 @@
+apiVersion: fintlabs.no/v1alpha1
+kind: FintAdapter
+metadata:
+  name: sondres-test-adapter
+  namespace: fintlabs-no
+  labels:
+    app.kubernetes.io/name: test-adapter
+    app.kubernetes.io/instance: test-adapter_rogfk_no
+    app.kubernetes.io/version: latest
+    app.kubernetes.io/component: adapter
+    app.kubernetes.io/part-of: arkiv
+    fintlabs.no/team: flais
+    fintlabs.no/org-id: fintlabs.no
+
+spec:
+  orgId: fintlabs.no
+  note: This is LA8PV transmitting on the short-wave band on fifty meters - over og ut.
+  components:
+    - administrasjon_personal
+    - utdanning_elev
+
