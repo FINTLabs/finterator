@@ -76,7 +76,7 @@ public class FintAdapterDependentResource
     }
 
     private String generateNote(FintAdapterCrd primary) {
-        return String.format("%s\n\n%s%s", primary.getSpec().getNote(), "Denne adapteren er automatisk opprettes og håndteres av ", applicationId.toUpperCase());
+        return String.format("%s\n\n%s%s", primary.getSpec().getNote(), "Denne adapteren er automatisk opprettet og håndteres av ", applicationId.toUpperCase());
     }
 
     private Function<Adapter, Adapter> handleDesiredForExisting(FintAdapterCrd primary) {
