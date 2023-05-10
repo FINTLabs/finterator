@@ -21,7 +21,7 @@ public class AdapterEventRequestProducerService {
     private final RequestProducer<AdapterEvent, AdapterEvent> requestProducer;
 
     public AdapterEventRequestProducerService(
-            @Value("finterator") String applicationId,
+            @Value("${fint.application-id}") String applicationId,
             RequestProducerFactory requestProducerFactory,
             ReplyTopicService replyTopicService
     ) {
