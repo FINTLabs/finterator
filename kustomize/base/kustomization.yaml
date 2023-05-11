@@ -9,6 +9,7 @@ resources:
   - serviceaccount.yaml
   - rolebinding.yaml
   - namespace.yaml
+  - fintadapters.fintlabs.no-v1.yml
   - fintclients.fintlabs.no-v1.yml
   - kafka.yaml
 commonLabels:
