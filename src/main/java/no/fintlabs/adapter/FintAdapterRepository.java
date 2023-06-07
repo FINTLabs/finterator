@@ -1,6 +1,7 @@
 package no.fintlabs.adapter;
 
 import lombok.extern.slf4j.Slf4j;
+import no.fintlabs.CustomerObjectResponseException;
 import no.fintlabs.FintCustomerObjectEvent;
 import no.fintlabs.SecretService;
 import org.springframework.stereotype.Repository;
@@ -35,7 +36,7 @@ public class FintAdapterRepository {
         if (adapterEvent.isPresent()) {
             AdapterEvent adapterEvent1 = adapterEvent.get();
             if (adapterEvent1.hasError()) {
-                throw new RuntimeException(adapterEvent1.getErrorMessage());
+                throw new CustomerObjectResponseException(adapterEvent1.getErrorMessage());
             }
             Adapter adapter = adapterEvent1.getObject();
 
@@ -58,7 +59,7 @@ public class FintAdapterRepository {
                 )
                 .map(adapterEvent -> {
                     if (adapterEvent.hasError()) {
-                        throw new RuntimeException(adapterEvent.getErrorMessage());
+                        throw new CustomerObjectResponseException(adapterEvent.getErrorMessage());
                     }
                     return adapterEvent;
                 })

@@ -1,6 +1,7 @@
 package no.fintlabs.client;
 
 import lombok.extern.slf4j.Slf4j;
+import no.fintlabs.CustomerObjectResponseException;
 import no.fintlabs.FintCustomerObjectEvent;
 import no.fintlabs.SecretService;
 import org.springframework.stereotype.Repository;
@@ -65,7 +66,7 @@ public class FintClientRepository {
                 )
                 .map(clientEvent -> {
                     if (clientEvent.hasError()) {
-                        throw new RuntimeException(clientEvent.getErrorMessage());
+                        throw new CustomerObjectResponseException(clientEvent.getErrorMessage());
                     }
                     return clientEvent;
                 })
