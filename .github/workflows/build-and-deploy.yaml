@@ -48,11 +48,6 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
 
-      - name: Log in aks
-        uses: azure/login@v1
-        with:
-          creds: '${{ secrets.AZ_CLI_CDN }}'
-
       ## Alpha cluster ##
       - name: Bake alpha manifests with Kustomize
         uses: azure/k8s-bake@v2.4
@@ -60,6 +55,11 @@ jobs:
           renderEngine: 'kustomize'
           kustomizationPath: 'kustomize/overlays/alpha'
         id: bake-alpha
+
+      - name: Log in aks
+        uses: azure/login@v1
+        with:
+          creds: '${{ secrets.AKS_ALPHA_FINT_GITHUB }}'
 
       - name: Set the target Alpha cluster.
         uses: azure/aks-set-context@v3
