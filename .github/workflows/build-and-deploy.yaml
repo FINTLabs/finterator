@@ -59,7 +59,7 @@ jobs:
       - name: Log in aks
         uses: azure/login@v1
         with:
-          creds: '${{ secrets.AKS_CLI_CDN }}'
+          creds: '${{ AZURE_ALPHA_GITHUB }}'
 
       - name: Set up kubelogin
         uses: azure/use-kubelogin@v1
