@@ -7,12 +7,12 @@ on:
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
-  ALPHA_CLUSTER_NAME: aks-alpha-fint-2021-11-18
-  ALPHA_CLUSTER_RESOURCE_GROUP: rg-aks-alpha
-  BETA_CLUSTER_NAME: aks-beta-fint-2021-11-23
-  BETA_CLUSTER_RESOURCE_GROUP: rg-aks-beta
-  API_CLUSTER_NAME: aks-api-fint-2022-02-08
-  API_CLUSTER_RESOURCE_GROUP: rg-aks-api
+  ALPHA_CLUSTER_NAME: ${{vars.ALPHA_CLUSTER_NAME}}
+  ALPHA_CLUSTER_RESOURCE_GROUP: ${{vars.ALPHA_CLUSTER_RESOURCE_GROUP}}
+  BETA_CLUSTER_NAME: ${{vars.BETA_CLUSTER_NAME}}
+  BETA_CLUSTER_RESOURCE_GROUP: ${{vars.BETA_CLUSTER_RESOURCE_GROUP}}
+  API_CLUSTER_NAME: ${{vars.API_CLUSTER_NAME}}
+  API_CLUSTER_RESOURCE_GROUP: ${{vars.API_CLUSTER_RESOURCE_GROUP}}
 
 jobs:
   build-and-push-image:
@@ -48,20 +48,25 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
 
+      - uses: azure/use-kubelogin@v1
+        with:
+          kubelogin-version: 'v0.0.26'
+
       ## Alpha cluster ##
+      - name: Set the target Alpha cluster.
+        uses: azure/aks-set-context@v3
+        with:
+          cluster-name: ${{ env.ALPHA_CLUSTER_NAME }}
+          resource-group: ${{ env.ALPHA_CLUSTER_RESOURCE_GROUP }}
+          admin: 'true'
+          use-kubelogin: 'true'
+
       - name: Bake alpha manifests with Kustomize
-        uses: azure/k8s-bake@v2.2
+        uses: azure/k8s-bake@v2.4
         with:
           renderEngine: 'kustomize'
           kustomizationPath: 'kustomize/overlays/alpha'
         id: bake-alpha
-
-      - name: Set the target Alpha cluster.
-        uses: azure/aks-set-context@v1
-        with:
-          creds: '${{ secrets.AKS_ALPHA_FINT_GITHUB }}'
-          cluster-name: ${{ env.ALPHA_CLUSTER_NAME }}
-          resource-group: ${{ env.ALPHA_CLUSTER_RESOURCE_GROUP }}
 
       - name: Deploy to Alpha
         uses: azure/k8s-deploy@v4.4
