@@ -25,6 +25,10 @@ spec:
                 items:
                   type: string
                 type: array
+              assetIds:
+                items:
+                  type: string
+                type: array
             type: object
           status:
             properties:

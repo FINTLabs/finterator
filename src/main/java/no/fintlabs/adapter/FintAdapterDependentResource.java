@@ -69,6 +69,10 @@ public class FintAdapterDependentResource
                     .build();
             primary.getSpec().getComponents()
                     .forEach(component -> adapter.addComponent(String.format("ou=%s,ou=components,o=fint", component)));
+
+            String orgId = primary.getSpec().getOrgId().replace(".","_");
+            primary.getSpec().getAssetIds()
+                    .forEach(assetId -> adapter.addAssetId(String.format("ou=%s,ou=assets,ou=%s,ou=organisations,o=fint", assetId, orgId)));
             log.info("No adapter found in event store. Desired adapter is: {}", adapter);
 
             return adapter;
@@ -86,9 +90,14 @@ public class FintAdapterDependentResource
             Adapter desiredAdapter = SerializationUtils.clone(currentAdapter);
             desiredAdapter.setNote(generateNote(primary));
             desiredAdapter.getComponents().clear();
+            desiredAdapter.getAssets().clear();
             desiredAdapter.setManaged(true);
             primary.getSpec().getComponents()
                     .forEach(component -> desiredAdapter.addComponent(String.format("ou=%s,ou=components,o=fint", component)));
+
+            String orgId = primary.getSpec().getOrgId().replace(".","_");
+            primary.getSpec().getAssetIds()
+                    .forEach(asset -> desiredAdapter.addAssetId(String.format("ou=%s,ou=assets,ou=%s,ou=organisations,o=fint", asset.replace(".","_"), orgId)));
 
             return desiredAdapter;
         };

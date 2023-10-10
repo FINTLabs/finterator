@@ -1,7 +1,7 @@
 apiVersion: fintlabs.no/v1alpha1
 kind: FintClient
 metadata:
-  name: frodes-test-client
+  name: flais-test-client
   namespace: fintlabs-no
   labels:
     app.kubernetes.io/name: test-adapter

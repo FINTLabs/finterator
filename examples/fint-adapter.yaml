@@ -1,7 +1,7 @@
 apiVersion: fintlabs.no/v1alpha1
 kind: FintAdapter
 metadata:
-  name: sondres-test-adapter
+  name: test-adapter-2
   namespace: fintlabs-no
   labels:
     app.kubernetes.io/name: test-adapter
@@ -18,4 +18,8 @@ spec:
   components:
     - administrasjon_personal
     - utdanning_elev
+  assetIds:
+    - fylkesting_viken_no
+    - fylkesting_rogfk_no
+    - fylkesting_flais_no
 
