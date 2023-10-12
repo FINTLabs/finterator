@@ -1,7 +1,7 @@
 apiVersion: fintlabs.no/v1alpha1
 kind: FintAdapter
 metadata:
-  name: test-adapter-2
+  name: test-adapter
   namespace: fintlabs-no
   labels:
     app.kubernetes.io/name: test-adapter

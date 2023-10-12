@@ -16,6 +16,6 @@ public class FintAdapterSpec implements FlaisSpec {
     private String orgId;
     private String note;
     private List<String> components = Collections.emptyList();
-    private List<String> assetIds = Collections.emptyList();
+    private List<String> assets = Collections.emptyList();
 
 }
