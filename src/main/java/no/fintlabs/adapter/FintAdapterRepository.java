@@ -26,6 +26,8 @@ public class FintAdapterRepository {
 
     public Adapter add(Adapter desired, FintAdapterCrd crd) {
 
+        log.debug("Repository add: Desired name: {}, Desired clientId: {}, crd {}", desired.getName(), desired.getClientId(), crd);
+
         Optional<AdapterEvent> adapterEvent = adapterEventRequestProducerService.get(AdapterEvent
                 .builder()
                 .object(desired)
@@ -33,8 +35,11 @@ public class FintAdapterRepository {
                 .operation(FintCustomerObjectEvent.Operation.CREATE)
                 .build());
 
+        log.debug("Repository add: Adapter event: {}", adapterEvent);
+
         if (adapterEvent.isPresent()) {
             AdapterEvent adapterEvent1 = adapterEvent.get();
+            log.debug("adapterEvent1: {}", adapterEvent1);
             if (adapterEvent1.hasError()) {
                 throw new CustomerObjectResponseException(adapterEvent1.getErrorMessage());
             }
