@@ -48,8 +48,7 @@ public class FintAdapterDependentResource
 
     @Override
     public Adapter desired(FintAdapterCrd primary, Context<FintAdapterCrd> context) {
-        log.debug("Desired storage account for {}:", primary.getMetadata().getName());
-        log.debug("👍🏻FintAdapterCrd data: {}", primary);
+        log.debug("Desired storage account for: {}", primary.getMetadata().getName());
 
         return context
                 .getSecondaryResource(Adapter.class)
