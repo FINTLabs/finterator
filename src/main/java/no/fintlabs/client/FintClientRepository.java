@@ -29,19 +29,19 @@ public class FintClientRepository {
     public Client add(Client desired, FintClientCrd crd) {
 
 
-        Optional<ClientEvent> clientEvent = clientEventRequestProducerService.get(ClientEvent
+        Optional<ClientEvent> optionalClientEvent = clientEventRequestProducerService.get(ClientEvent
                 .builder()
                 .object(desired)
                 .orgId(crd.getSpec().getOrgId())
                 .operation(FintCustomerObjectEvent.Operation.CREATE)
                 .build());
 
-        if (clientEvent.isPresent()) {
-            ClientEvent clientEvent1 = clientEvent.get();
-            if (clientEvent1.hasError()) {
-                throw new RuntimeException(clientEvent1.getErrorMessage());
+        if (optionalClientEvent.isPresent()) {
+            ClientEvent clientEvent = optionalClientEvent.get();
+            if (clientEvent.hasError()) {
+                throw new RuntimeException(clientEvent.getErrorMessage());
             }
-            Client client = clientEvent1.getObject();
+            Client client = clientEvent.getObject();
 
             log.info("Client {}", client);
 

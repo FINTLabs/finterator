@@ -74,8 +74,6 @@ public class FintAdapterRepository {
 
     public Set<Adapter> get(FintAdapterCrd crd) {
 
-        log.debug("🟢Initializing get... FintAdapterCrd {}", crd);
-
         return getValueFromAnnotationByKey(crd, FintAdapterDependentResource.ANNOTATION_ADAPTER_DN)
                 .map(dn -> adapterEventRequestProducerService.get(AdapterEvent
                                 .builder()

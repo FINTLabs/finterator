@@ -54,9 +54,9 @@ public class FintClientSecretDependentResource
                 .endMetadata()
                 .withType("Opaque")
                 .addToData("fint.core.oauth2.username", encode(fintClient.getName()))
-                .addToData("fint.core.oauth2.password", encode(secretService.decrypt(fintClient.getPassword())))
+                .addToData("fint.core.oauth2.password", encode(fintClient.getPassword() != null ? secretService.decrypt(fintClient.getPassword()) : ""))
                 .addToData("fint.core.oauth2.client-id", encode((fintClient.getClientId())))
-                .addToData("fint.core.oauth2.client-secret", encode(secretService.decrypt(fintClient.getClientSecret())))
+                .addToData("fint.core.oauth2.client-secret", encode(fintClient.getClientSecret() != null ? secretService.decrypt(fintClient.getClientSecret()) : ""))
                 .build();
 
 
