@@ -39,7 +39,7 @@ public class FintClientDependentResource
         super(Client.class, workflow);
         this.fintClientRepository = fintClientRepository;
         this.secretService = secretService;
-        setPollingPeriod(Duration.ofSeconds(10).toMillis());
+        setPollingPeriod(Duration.ofMinutes(60).toMillis());
     }
 
     @Override
@@ -128,9 +128,10 @@ public class FintClientDependentResource
         for (var row : clients) {
             // TODO tilsvarende for password
 
-            if (StringUtils.isEmpty(row.getClientSecret()))
+            if (StringUtils.isEmpty(row.getClientSecret()) || StringUtils.isEmpty(row.getPassword())) {
                 row.setNote("Trigger update because clientSecret is empty 🎉");
-            log.info(row.getNote());
+                log.info("Change client '{}' to trigger update", row.getName());
+            }
         }
         log.debug("fetching {}...", clients.size());
         return clients;
@@ -138,19 +139,8 @@ public class FintClientDependentResource
 
     @Override
     public Matcher.Result<Client> match(Client actualResource, FintClientCrd primary, Context<FintClientCrd> context) {
-        DesiredEqualsMatcher<Client, FintClientCrd> matcher = new DesiredEqualsMatcher<>(this);
-        log.debug("Nilsodd54");
 
-        if (StringUtils.isEmpty(actualResource.getClientSecret())) {
-            log.debug("Matcher client secret is blank");
-            return new Matcher.Result<Client>() {
-                @Override
-                public boolean matched() {
-                    log.debug("Client secret is empty, trigger update");
-                    return false;
-                }
-            };
-        }
+        DesiredEqualsMatcher<Client, FintClientCrd> matcher = new DesiredEqualsMatcher<>(this);
         return matcher.match(actualResource, primary, context);
     }
 }
