@@ -63,6 +63,7 @@ public class FintClientSecretDependentResource
     }
 
     private String encode(String value) {
+        if (value == null) value = "";
         return Base64.getEncoder().encodeToString(value.getBytes());
     }
 
