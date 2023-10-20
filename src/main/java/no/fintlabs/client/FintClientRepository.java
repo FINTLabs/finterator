@@ -28,7 +28,6 @@ public class FintClientRepository {
 
     public Client add(Client desired, FintClientCrd crd) {
 
-
         Optional<ClientEvent> optionalClientEvent = clientEventRequestProducerService.get(ClientEvent
                 .builder()
                 .object(desired)
@@ -36,22 +35,18 @@ public class FintClientRepository {
                 .operation(FintCustomerObjectEvent.Operation.CREATE)
                 .build());
 
-        if (optionalClientEvent.isPresent()) {
-            ClientEvent clientEvent = optionalClientEvent.get();
-            if (clientEvent.hasError()) {
-                throw new RuntimeException(clientEvent.getErrorMessage());
-            }
-            Client client = clientEvent.getObject();
-
-            log.info("Client {}", client);
-
-            return client;
-
+        if (optionalClientEvent.isEmpty()) {
+            throw new RuntimeException("An error occured while creating client: " + desired.getName());
         }
 
-        throw new RuntimeException("An error occured while creating client: " + desired.getName());
+        ClientEvent clientEvent = optionalClientEvent.get();
+        if (clientEvent.hasError()) {
+            throw new RuntimeException(clientEvent.getErrorMessage());
+        }
 
-
+        Client client = clientEvent.getObject();
+        log.info("Client {}", client);
+        return client;
     }
 
     public Client update(Client desired, FintClientCrd crd) {

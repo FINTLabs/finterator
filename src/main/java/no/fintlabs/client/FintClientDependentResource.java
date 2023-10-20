@@ -125,14 +125,14 @@ public class FintClientDependentResource
     @Override
     public Set<Client> fetchResources(FintClientCrd primaryResource) {
         Set<Client> clients = fintClientRepository.get(primaryResource);
-        for (var row : clients) {
 
+        for (var row : clients) {
             if (StringUtils.isEmpty(row.getClientSecret()) || StringUtils.isEmpty(row.getPassword())) {
-                row.setNote("Trigger update because clientSecret is empty 🎉");
+                row.setNote("Trigger update because clientSecret or password is empty");
                 log.info("Change client '{}' to trigger update", row.getName());
             }
         }
-        log.debug("fetching {}...", clients.size());
+
         return clients;
     }
 
