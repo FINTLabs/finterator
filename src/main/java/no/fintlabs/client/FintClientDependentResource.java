@@ -126,7 +126,6 @@ public class FintClientDependentResource
     public Set<Client> fetchResources(FintClientCrd primaryResource) {
         Set<Client> clients = fintClientRepository.get(primaryResource);
         for (var row : clients) {
-            // TODO tilsvarende for password
 
             if (StringUtils.isEmpty(row.getClientSecret()) || StringUtils.isEmpty(row.getPassword())) {
                 row.setNote("Trigger update because clientSecret is empty 🎉");
