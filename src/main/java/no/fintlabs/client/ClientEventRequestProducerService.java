@@ -48,7 +48,7 @@ public class ClientEventRequestProducerService {
                 ClientEvent.class,
                 RequestProducerConfiguration
                         .builder()
-                        .defaultReplyTimeout(Duration.ofMinutes(2))
+                        .defaultReplyTimeout(Duration.ofMinutes(5))
                         .build()
         );
     }
