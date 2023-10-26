@@ -1,6 +1,7 @@
 package no.fintlabs;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -50,6 +51,8 @@ public class SecretService {
     }
 
     public String decrypt(String encryptedPassword) {
+        if (StringUtils.isEmpty(encryptedPassword)) return null;
+
         try {
             Cipher decryptCipher = Cipher.getInstance("RSA");
             decryptCipher.init(Cipher.DECRYPT_MODE, privateKey);

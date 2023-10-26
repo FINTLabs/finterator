@@ -76,7 +76,8 @@ public class FintAdapterRepository {
 
         Optional<String> dn = getValueFromAnnotationByKey(crd, FintAdapterDependentResource.ANNOTATION_ADAPTER_DN);
         if (dn.isEmpty()) {
-            throw new RuntimeException("Unable to fint adapter DN");
+            log.debug("Skipping adapter lookup due to missing DN in CRD.");
+            return Collections.emptySet();
         }
 
         Optional<AdapterEvent> responseOptional = adapterEventRequestProducerService.get(createRequestEvent(crd, dn.get()));

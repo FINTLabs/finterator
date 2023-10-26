@@ -74,9 +74,11 @@ public class FintClientRepository {
 
         Optional<String> dn = getValueFromAnnotationByKey(crd, FintClientDependentResource.ANNOTATION_CLIENT_DN);
         if (dn.isEmpty()) {
-            throw new RuntimeException("Unable to find client DN");
+            log.debug("Skipping client lookup due to missing DN in CRD.");
+            return Collections.emptySet();
         }
 
+        log.debug("Getting client: {}", dn.get());
         Optional<ClientEvent> responseOptional = clientEventRequestProducerService.get(createRequestEvent(crd, dn.get()));
 
         if (responseOptional.isEmpty()) {

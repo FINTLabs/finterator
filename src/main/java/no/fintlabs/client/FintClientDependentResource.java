@@ -137,7 +137,7 @@ public class FintClientDependentResource
     }
 
     private boolean isSecretOrPasswordMissing(Client client) {
-        return client.isManaged() && (StringUtils.isEmpty(client.getClientSecret()) || StringUtils.isEmpty(client.getPassword()));
+        return /*client.isManaged() &&*/ (StringUtils.isEmpty(client.getClientSecret()) || StringUtils.isEmpty(client.getPassword()));
     }
 
     @Override

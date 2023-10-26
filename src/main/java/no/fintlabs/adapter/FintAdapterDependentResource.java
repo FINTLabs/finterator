@@ -135,7 +135,7 @@ public class FintAdapterDependentResource
     }
 
     private boolean isSecretOrPasswordMissing(Adapter adapter) {
-        return adapter.isManaged() && (StringUtils.isEmpty(adapter.getClientSecret()) || StringUtils.isEmpty(adapter.getPassword()));
+        return /*adapter.isManaged() &&*/ (StringUtils.isEmpty(adapter.getClientSecret()) || StringUtils.isEmpty(adapter.getPassword()));
     }
 
     @Override
