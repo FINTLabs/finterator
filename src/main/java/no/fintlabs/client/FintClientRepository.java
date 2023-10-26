@@ -89,6 +89,11 @@ public class FintClientRepository {
             throw new CustomerObjectResponseException(response.getErrorMessage());
         }
 
+        if (response.getObject() == null) {
+            log.debug("Object in response is null");
+            return Collections.emptySet();
+        }
+
         return Collections.singleton(response.getObject());
     }
 

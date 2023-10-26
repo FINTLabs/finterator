@@ -74,22 +74,42 @@ public class FintAdapterRepository {
 
     public Set<Adapter> get(FintAdapterCrd crd) {
 
-        return getValueFromAnnotationByKey(crd, FintAdapterDependentResource.ANNOTATION_ADAPTER_DN)
-                .map(dn -> adapterEventRequestProducerService.get(AdapterEvent
-                                .builder()
-                                .object(Adapter
-                                        .builder()
-                                        .dn(dn)
-                                        .publicKey(secretService.getPublicKeyString())
-                                        .build())
-                                .orgId(crd.getSpec().getOrgId())
-                                .operation(FintCustomerObjectEvent.Operation.READ)
-                                .build())
-                        .map(AdapterEvent::getObject)
-                        .map(Collections::singleton)
-                        .orElse(Collections.emptySet())
-                )
-                .orElse(Collections.emptySet());
+        Optional<String> dn = getValueFromAnnotationByKey(crd, FintAdapterDependentResource.ANNOTATION_ADAPTER_DN);
+        if (dn.isEmpty()) {
+            throw new RuntimeException("Unable to fint adapter DN");
+        }
+
+        Optional<AdapterEvent> responseOptional = adapterEventRequestProducerService.get(createRequestEvent(crd, dn.get()));
+
+        if (responseOptional.isEmpty()) {
+            throw new CustomerObjectResponseException("Empty response from Kafka. The request has probably timed out. Client: " + dn.get());
+        }
+
+        AdapterEvent response = responseOptional.get();
+
+        if (response.hasError()){
+            throw new CustomerObjectResponseException(response.getErrorMessage());
+        }
+
+        if (response.getObject() == null) {
+            log.debug("Object in response is null");
+            return Collections.emptySet();
+        }
+
+        return Collections.singleton(response.getObject());
+    }
+
+    private AdapterEvent createRequestEvent(FintAdapterCrd crd, String dn) {
+        return AdapterEvent
+                .builder()
+                .object(Adapter
+                        .builder()
+                        .dn(dn)
+                        .publicKey(secretService.getPublicKeyString())
+                        .build())
+                .orgId(crd.getSpec().getOrgId())
+                .operation(FintCustomerObjectEvent.Operation.READ)
+                .build();
     }
 
     public void delete(Adapter adapter, FintAdapterCrd primary) {

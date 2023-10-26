@@ -112,7 +112,7 @@ public class FintClientDependentResource
     @Override
     public Client create(Client desired, FintClientCrd primary, Context<FintClientCrd> context) {
 
-        log.info("Creating...");
+        log.info("Creating client...");
         log.info("Client is present in context: {}", context.getSecondaryResource(Client.class).isPresent());
 
         Client client = fintClientRepository.add(desired, primary);

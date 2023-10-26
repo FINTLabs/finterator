@@ -7,8 +7,10 @@ import io.javaoperatorsdk.operator.processing.dependent.Updater;
 import lombok.extern.slf4j.Slf4j;
 import no.fintlabs.FlaisExternalDependentResource;
 import no.fintlabs.SecretService;
+import no.fintlabs.client.Client;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.SerializationUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -108,7 +110,7 @@ public class FintAdapterDependentResource
 
     @Override
     public Adapter create(Adapter desired, FintAdapterCrd primary, Context<FintAdapterCrd> context) {
-        log.info("Creating...");
+        log.info("Creating adapter...");
         log.info("Adapter is present in context: {}", context.getSecondaryResource(Adapter.class).isPresent());
 
         Adapter adapter = fintAdapterRepository.add(desired, primary);
@@ -120,7 +122,20 @@ public class FintAdapterDependentResource
 
     @Override
     public Set<Adapter> fetchResources(FintAdapterCrd primaryResource) {
-        return fintAdapterRepository.get(primaryResource);
+        Set<Adapter> adapters = fintAdapterRepository.get(primaryResource);
+
+        for (var adapter : adapters) {
+            if (isSecretOrPasswordMissing(adapter)) {
+                adapter.setNote("Trigger update because clientSecret or password is empty");
+                log.info("Change adapter '{}' to trigger update", adapter.getName());
+            }
+        }
+
+        return adapters;
+    }
+
+    private boolean isSecretOrPasswordMissing(Adapter adapter) {
+        return adapter.isManaged() && (StringUtils.isEmpty(adapter.getClientSecret()) || StringUtils.isEmpty(adapter.getPassword()));
     }
 
     @Override
