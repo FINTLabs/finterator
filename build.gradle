@@ -28,7 +28,7 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-actuator'
 
 	implementation 'no.fintlabs:flais-operator-starter:1.0.0'
-	annotationProcessor 'io.fabric8:crd-generator-apt:6.9.0'
+	annotationProcessor 'io.fabric8:crd-generator-apt:6.2.0'
 
 	implementation 'org.springframework.kafka:spring-kafka'
 	implementation 'no.fintlabs:fint-kafka:4.0.1'

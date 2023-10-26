@@ -17,14 +17,14 @@ spec:
         properties:
           spec:
             properties:
+              orgId:
+                type: string
+              note:
+                type: string
               components:
                 items:
                   type: string
                 type: array
-              note:
-                type: string
-              orgId:
-                type: string
             type: object
           status:
             properties:
