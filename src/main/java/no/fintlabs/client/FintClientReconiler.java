@@ -23,7 +23,21 @@ public class FintClientReconiler extends FlaisReconiler<FintClientCrd, FintClien
 
     @Override
     public UpdateControl<FintClientCrd> reconcile(FintClientCrd resource, Context<FintClientCrd> context) {
-        return super.reconcile(resource, context);
+        //return super.reconcile(resource, context);
+
+        String name = resource.getMetadata().getName();
+        String namespace = resource.getMetadata().getNamespace();
+
+        String acceptedName = "frode";
+        String acceptedNamespace = "fintlabs-no";
+
+        if (name.contains(acceptedName) && namespace.contains(acceptedNamespace)) {
+            log.info("Include update for " + name + " in " + namespace);
+            return super.reconcile(resource, context);
+        } else {
+            log.info("Skip update for " + name + " in " + namespace);
+            return UpdateControl.noUpdate();
+        }
     }
 
 
