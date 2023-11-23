@@ -74,7 +74,7 @@ public class FintClientRepository {
 
         Optional<String> dn = getValueFromAnnotationByKey(crd, FintClientDependentResource.ANNOTATION_CLIENT_DN);
         if (dn.isEmpty()) {
-            log.debug("Skipping client lookup due to missing DN in CRD.");
+            log.warn("Skipping client lookup due to missing DN in CRD.");
             return Collections.emptySet();
         }
 

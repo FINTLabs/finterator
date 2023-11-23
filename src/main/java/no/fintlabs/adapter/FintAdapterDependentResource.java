@@ -6,6 +6,7 @@ import io.javaoperatorsdk.operator.processing.dependent.Matcher;
 import io.javaoperatorsdk.operator.processing.dependent.Updater;
 import lombok.extern.slf4j.Slf4j;
 import no.fintlabs.FlaisExternalDependentResource;
+import no.fintlabs.LdapNameGeneratorUtil;
 import no.fintlabs.SecretService;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.SerializationUtils;
@@ -58,7 +59,7 @@ public class FintAdapterDependentResource
 
     private Supplier<Adapter> handleDesiredOnNew(FintAdapterCrd primary) {
         return () -> {
-            String adapterName = String.format("%s-%s", primary.getMetadata().getName(), RandomStringUtils.randomAlphabetic(5).toLowerCase());
+            String adapterName = LdapNameGeneratorUtil.generate(primary.getMetadata().getName(), primary.getSpec().getOrgId(), "adapter");
             Adapter adapter = Adapter
                     .builder()
                     .name(adapterName)

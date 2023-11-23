@@ -7,6 +7,7 @@ import io.javaoperatorsdk.operator.processing.dependent.Updater;
 import lombok.extern.slf4j.Slf4j;
 import no.fintlabs.CustomerObjectResponseException;
 import no.fintlabs.FlaisExternalDependentResource;
+import no.fintlabs.LdapNameGeneratorUtil;
 import no.fintlabs.SecretService;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.SerializationUtils;
@@ -61,7 +62,8 @@ public class FintClientDependentResource
 
     private Supplier<Client> handleDesiredOnNew(FintClientCrd primary) {
         return () -> {
-            String clientName = String.format("%s-%s", primary.getMetadata().getName(), RandomStringUtils.randomAlphabetic(5).toLowerCase());
+            String clientName = LdapNameGeneratorUtil.generate(primary.getMetadata().getName(), primary.getSpec().getOrgId(), "client");
+
             Client client = Client
                     .builder()
                     .name(clientName)
