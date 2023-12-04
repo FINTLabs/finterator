@@ -92,8 +92,8 @@ public class FintClientRepository {
         }
 
         if (response.getObject() == null) {
-            log.debug("Object in response is null");
-            return Collections.emptySet();
+            log.error("DN has been set, but the client could not be found! {}", dn.get());
+            throw new IllegalStateException("DN has been set, but the client could not be found! " + dn.get());
         }
 
         return Collections.singleton(response.getObject());
