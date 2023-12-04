@@ -83,12 +83,14 @@ public class FintAdapterRepository {
         Optional<AdapterEvent> responseOptional = adapterEventRequestProducerService.get(createRequestEvent(crd, dn.get()));
 
         if (responseOptional.isEmpty()) {
+            log.error("Empty response from Kafka. The request has probably timed out. Client: {}", dn.get());
             throw new CustomerObjectResponseException("Empty response from Kafka. The request has probably timed out. Client: " + dn.get());
         }
 
         AdapterEvent response = responseOptional.get();
 
         if (response.hasError()){
+            log.error("Error response from Kafka: {}", response.getErrorMessage());
             throw new CustomerObjectResponseException(response.getErrorMessage());
         }
 
