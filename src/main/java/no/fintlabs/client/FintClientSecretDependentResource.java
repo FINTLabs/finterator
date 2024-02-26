@@ -4,7 +4,11 @@ import io.fabric8.kubernetes.api.model.Secret;
 import io.fabric8.kubernetes.api.model.SecretBuilder;
 import io.fabric8.kubernetes.client.KubernetesClient;
 import io.javaoperatorsdk.operator.api.reconciler.Context;
+import io.javaoperatorsdk.operator.processing.dependent.Matcher;
+import io.javaoperatorsdk.operator.processing.dependent.kubernetes.GenericKubernetesResourceMatcher;
+import io.javaoperatorsdk.operator.processing.dependent.kubernetes.KubernetesDependent;
 import io.javaoperatorsdk.operator.processing.dependent.kubernetes.KubernetesDependentResourceConfig;
+import io.javaoperatorsdk.operator.processing.dependent.workflow.Condition;
 import lombok.extern.slf4j.Slf4j;
 import no.fintlabs.FlaisKubernetesDependentResource;
 import no.fintlabs.SecretService;
@@ -39,11 +43,9 @@ public class FintClientSecretDependentResource
     protected Secret desired(FintClientCrd resource, Context<FintClientCrd> context) {
 
         log.debug("Desired secret for {}", resource.getMetadata().getName());
-
         Client fintClient = context.getSecondaryResource(Client.class).orElseThrow();
 
         HashMap<String, String> labels = new HashMap<>(resource.getMetadata().getLabels());
-
         labels.put("app.kubernetes.io/managed-by", "finterator");
 
         return new SecretBuilder()
@@ -58,12 +60,9 @@ public class FintClientSecretDependentResource
                 .addToData("fint.core.oauth2.client-id", encode((fintClient.getClientId())))
                 .addToData("fint.core.oauth2.client-secret", encode(secretService.decrypt(fintClient.getClientSecret())))
                 .build();
-
-
     }
 
     public String encode(String value) {
-        if (value == null) value = "";
         return Base64.getEncoder().encodeToString(value.getBytes());
     }
 

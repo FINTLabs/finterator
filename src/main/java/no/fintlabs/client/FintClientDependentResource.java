@@ -5,7 +5,9 @@ import io.javaoperatorsdk.operator.processing.dependent.DesiredEqualsMatcher;
 import io.javaoperatorsdk.operator.processing.dependent.Matcher;
 import io.javaoperatorsdk.operator.processing.dependent.Updater;
 import lombok.extern.slf4j.Slf4j;
+import no.fintlabs.CustomerObjectResponseException;
 import no.fintlabs.FlaisExternalDependentResource;
+import no.fintlabs.LdapNameGeneratorUtil;
 import no.fintlabs.SecretService;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.SerializationUtils;
@@ -60,7 +62,8 @@ public class FintClientDependentResource
 
     private Supplier<Client> handleDesiredOnNew(FintClientCrd primary) {
         return () -> {
-            String clientName = String.format("%s-%s", primary.getMetadata().getName(), RandomStringUtils.randomAlphabetic(5).toLowerCase());
+            String clientName = LdapNameGeneratorUtil.generate(primary.getMetadata().getName(), primary.getSpec().getOrgId(), "client");
+
             Client client = Client
                     .builder()
                     .name(clientName)
@@ -124,26 +127,18 @@ public class FintClientDependentResource
 
     @Override
     public Set<Client> fetchResources(FintClientCrd primaryResource) {
-        Set<Client> clients = fintClientRepository.get(primaryResource);
-
-        for (var client : clients) {
-            if (isSecretOrPasswordMissing(client)) {
-                client.setNote("Trigger update because clientSecret or password is empty");
-                log.info("Change client '{}' to trigger update", client.getName());
-            }
-        }
-
-        return clients;
-    }
-
-    private boolean isSecretOrPasswordMissing(Client client) {
-        return /*client.isManaged() &&*/ (StringUtils.isEmpty(client.getClientSecret()) || StringUtils.isEmpty(client.getPassword()));
+        return fintClientRepository.get(primaryResource);
     }
 
     @Override
     public Matcher.Result<Client> match(Client actualResource, FintClientCrd primary, Context<FintClientCrd> context) {
 
+        // TODO: 27/10/2023 Finn ut hvorfor managed blir false 
+        actualResource.setManaged(true);
+
         DesiredEqualsMatcher<Client, FintClientCrd> matcher = new DesiredEqualsMatcher<>(this);
-        return matcher.match(actualResource, primary, context);
+        Matcher.Result<Client> result = matcher.match(actualResource, primary, context);
+        log.debug("Match {} ={}", primary.getMetadata().getName(), result.matched());
+        return result;
     }
 }

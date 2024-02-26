@@ -1,0 +1,9 @@
+$patch: delete
+apiVersion: "fintlabs.no/v1alpha1"
+kind: KafkaUserAndAcl
+metadata:
+  name: finterator
+spec:
+  acls:
+    - permission: admin
+      topic: 'flais-io.fint-customer-objects.*'
