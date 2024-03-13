@@ -28,30 +28,25 @@ public class FintClientRepository {
 
     public Client add(Client desired, FintClientCrd crd) {
 
-
-        Optional<ClientEvent> clientEvent = clientEventRequestProducerService.get(ClientEvent
+        Optional<ClientEvent> optionalClientEvent = clientEventRequestProducerService.get(ClientEvent
                 .builder()
                 .object(desired)
                 .orgId(crd.getSpec().getOrgId())
                 .operation(FintCustomerObjectEvent.Operation.CREATE)
                 .build());
 
-        if (clientEvent.isPresent()) {
-            ClientEvent clientEvent1 = clientEvent.get();
-            if (clientEvent1.hasError()) {
-                throw new RuntimeException(clientEvent1.getErrorMessage());
-            }
-            Client client = clientEvent1.getObject();
-
-            log.info("Client {}", client);
-
-            return client;
-
+        if (optionalClientEvent.isEmpty()) {
+            throw new RuntimeException("An error occured while creating client: " + desired.getName());
         }
 
-        throw new RuntimeException("An error occured while creating client: " + desired.getName());
+        ClientEvent clientEvent = optionalClientEvent.get();
+        if (clientEvent.hasError()) {
+            throw new RuntimeException(clientEvent.getErrorMessage());
+        }
 
-
+        Client client = clientEvent.getObject();
+        log.info("Client {}", client);
+        return client;
     }
 
     public Client update(Client desired, FintClientCrd crd) {
@@ -77,22 +72,44 @@ public class FintClientRepository {
 
     public Set<Client> get(FintClientCrd crd) {
 
-        return getValueFromAnnotationByKey(crd, FintClientDependentResource.ANNOTATION_CLIENT_DN)
-                .map(dn -> clientEventRequestProducerService.get(ClientEvent
-                                .builder()
-                                .object(Client
-                                        .builder()
-                                        .dn(dn)
-                                        .publicKey(secretService.getPublicKeyString())
-                                        .build())
-                                .orgId(crd.getSpec().getOrgId())
-                                .operation(FintCustomerObjectEvent.Operation.READ)
-                                .build())
-                        .map(ClientEvent::getObject)
-                        .map(Collections::singleton)
-                        .orElse(Collections.emptySet())
-                )
-                .orElse(Collections.emptySet());
+        Optional<String> dn = getValueFromAnnotationByKey(crd, FintClientDependentResource.ANNOTATION_CLIENT_DN);
+        if (dn.isEmpty()) {
+            log.debug("Skipping client lookup due to missing DN in CRD.");
+            return Collections.emptySet();
+        }
+
+        log.debug("Getting client: {}", dn.get());
+        Optional<ClientEvent> responseOptional = clientEventRequestProducerService.get(createRequestEvent(crd, dn.get()));
+
+        if (responseOptional.isEmpty()) {
+            throw new CustomerObjectResponseException("Empty response from Kafka. The request has probably timed out. Client: " + dn.get());
+        }
+
+        ClientEvent response = responseOptional.get();
+
+        if (response.hasError()) {
+            throw new CustomerObjectResponseException(response.getErrorMessage());
+        }
+
+        if (response.getObject() == null) {
+            log.debug("Object in response is null");
+            return Collections.emptySet();
+        }
+
+        return Collections.singleton(response.getObject());
+    }
+
+    private ClientEvent createRequestEvent(FintClientCrd crd, String dn) {
+        return ClientEvent
+                .builder()
+                .object(Client
+                        .builder()
+                        .dn(dn)
+                        .publicKey(secretService.getPublicKeyString())
+                        .build())
+                .orgId(crd.getSpec().getOrgId())
+                .operation(FintCustomerObjectEvent.Operation.READ)
+                .build();
     }
 
     public void delete(Client client, FintClientCrd primay) {

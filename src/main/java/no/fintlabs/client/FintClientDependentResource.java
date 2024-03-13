@@ -9,6 +9,7 @@ import no.fintlabs.FlaisExternalDependentResource;
 import no.fintlabs.SecretService;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.SerializationUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -49,7 +50,7 @@ public class FintClientDependentResource
 
     @Override
     protected Client desired(FintClientCrd primary, Context<FintClientCrd> context) {
-        log.debug("Desired storage account for {}:", primary.getMetadata().getName());
+        log.debug("Desired client name: {}", primary.getMetadata().getName());
 
         return context
                 .getSecondaryResource(Client.class)
@@ -111,7 +112,7 @@ public class FintClientDependentResource
     @Override
     public Client create(Client desired, FintClientCrd primary, Context<FintClientCrd> context) {
 
-        log.info("Creating...");
+        log.info("Creating client...");
         log.info("Client is present in context: {}", context.getSecondaryResource(Client.class).isPresent());
 
         Client client = fintClientRepository.add(desired, primary);
@@ -123,13 +124,26 @@ public class FintClientDependentResource
 
     @Override
     public Set<Client> fetchResources(FintClientCrd primaryResource) {
-        return fintClientRepository.get(primaryResource);
+        Set<Client> clients = fintClientRepository.get(primaryResource);
+
+        for (var client : clients) {
+            if (isSecretOrPasswordMissing(client)) {
+                client.setNote("Trigger update because clientSecret or password is empty");
+                log.info("Change client '{}' to trigger update", client.getName());
+            }
+        }
+
+        return clients;
+    }
+
+    private boolean isSecretOrPasswordMissing(Client client) {
+        return /*client.isManaged() &&*/ (StringUtils.isEmpty(client.getClientSecret()) || StringUtils.isEmpty(client.getPassword()));
     }
 
     @Override
     public Matcher.Result<Client> match(Client actualResource, FintClientCrd primary, Context<FintClientCrd> context) {
-        DesiredEqualsMatcher<Client, FintClientCrd> matcher = new DesiredEqualsMatcher<>(this);
 
+        DesiredEqualsMatcher<Client, FintClientCrd> matcher = new DesiredEqualsMatcher<>(this);
         return matcher.match(actualResource, primary, context);
     }
 }

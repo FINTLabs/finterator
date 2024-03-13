@@ -44,7 +44,7 @@ public class AdapterEventRequestProducerService {
                 AdapterEvent.class,
                 RequestProducerConfiguration
                         .builder()
-                        .defaultReplyTimeout(Duration.ofMinutes(2))
+                        .defaultReplyTimeout(Duration.ofMinutes(5))
                         .build()
         );
     }
