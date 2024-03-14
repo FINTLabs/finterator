@@ -6,11 +6,9 @@ import io.javaoperatorsdk.operator.processing.dependent.Matcher;
 import io.javaoperatorsdk.operator.processing.dependent.Updater;
 import lombok.extern.slf4j.Slf4j;
 import no.fintlabs.FlaisExternalDependentResource;
+import no.fintlabs.LdapNameGeneratorUtil;
 import no.fintlabs.SecretService;
-import no.fintlabs.client.Client;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.SerializationUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -60,7 +58,7 @@ public class FintAdapterDependentResource
 
     private Supplier<Adapter> handleDesiredOnNew(FintAdapterCrd primary) {
         return () -> {
-            String adapterName = String.format("%s-%s", primary.getMetadata().getName(), RandomStringUtils.randomAlphabetic(5).toLowerCase());
+            String adapterName = LdapNameGeneratorUtil.generate(primary.getMetadata().getName(), primary.getSpec().getOrgId(), "adapter");
             Adapter adapter = Adapter
                     .builder()
                     .name(adapterName)
@@ -131,29 +129,20 @@ public class FintAdapterDependentResource
 
     @Override
     public Set<Adapter> fetchResources(FintAdapterCrd primaryResource) {
-        Set<Adapter> adapters = fintAdapterRepository.get(primaryResource);
-
-        for (var adapter : adapters) {
-            if (isSecretOrPasswordMissing(adapter)) {
-                adapter.setNote("Trigger update because clientSecret or password is empty");
-                log.info("Change adapter '{}' to trigger update", adapter.getName());
-            }
-        }
-
-        return adapters;
-    }
-
-    private boolean isSecretOrPasswordMissing(Adapter adapter) {
-        return /*adapter.isManaged() &&*/ (StringUtils.isEmpty(adapter.getClientSecret()) || StringUtils.isEmpty(adapter.getPassword()));
+        return fintAdapterRepository.get(primaryResource);
     }
 
     @Override
     public Matcher.Result<Adapter> match(
             Adapter actualResource, FintAdapterCrd primary, Context<FintAdapterCrd> context
     ) {
-        DesiredEqualsMatcher<Adapter, FintAdapterCrd> matcher = new DesiredEqualsMatcher<>(this);
+        // TODO: 27/10/2023 Finn ut hvorfor managed blir false
+        actualResource.setManaged(true);
 
-        return matcher.match(actualResource, primary, context);
+        DesiredEqualsMatcher<Adapter, FintAdapterCrd> matcher = new DesiredEqualsMatcher<>(this);
+        Matcher.Result<Adapter> result = matcher.match(actualResource, primary, context);
+        log.debug("Match {} ={}", primary.getMetadata().getName(), result.matched());
+        return result;
     }
 
 }
