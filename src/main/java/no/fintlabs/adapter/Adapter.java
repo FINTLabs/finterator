@@ -70,6 +70,16 @@ public final class Adapter implements Serializable {
         assets.removeIf(assetId -> assetId.equalsIgnoreCase(assetDn));
     }
 
+    public void addAssetId(String assetIdDn) {
+        if (assetIds.stream().noneMatch(assetIdDn::equalsIgnoreCase)) {
+            assetIds.add(assetIdDn);
+        }
+    }
+
+    public void removeAssetId(String assetIdDn) {
+        assetIds.removeIf(assetId -> assetId.equalsIgnoreCase(assetIdDn));
+    }
+
     public void addComponent(String componentDn) {
         if (components.stream().noneMatch(componentDn::equalsIgnoreCase)) {
             components.add(componentDn);

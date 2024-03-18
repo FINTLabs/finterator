@@ -25,7 +25,7 @@ spec:
                 items:
                   type: string
                 type: array
-              assets:
+              assetIds:
                 items:
                   type: string
                 type: array
