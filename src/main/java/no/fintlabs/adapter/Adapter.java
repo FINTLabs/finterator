@@ -60,6 +60,26 @@ public final class Adapter implements Serializable {
     @Builder.Default
     private List<String> accessPackages = new ArrayList<>();
 
+    public void addAssets(String assetDn) {
+        if (assets.stream().noneMatch(assetDn::equalsIgnoreCase)) {
+            assets.add(assetDn);
+        }
+    }
+
+    public void removeAssets(String assetDn) {
+        assets.removeIf(assetId -> assetId.equalsIgnoreCase(assetDn));
+    }
+
+    public void addAssetId(String assetIdDn) {
+        if (assetIds.stream().noneMatch(assetIdDn::equalsIgnoreCase)) {
+            assetIds.add(assetIdDn);
+        }
+    }
+
+    public void removeAssetId(String assetIdDn) {
+        assetIds.removeIf(assetId -> assetId.equalsIgnoreCase(assetIdDn));
+    }
+
     public void addComponent(String componentDn) {
         if (components.stream().noneMatch(componentDn::equalsIgnoreCase)) {
             components.add(componentDn);
