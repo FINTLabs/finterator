@@ -18,7 +18,7 @@ spec:
   components:
     - administrasjon_personal
     - utdanning_elev
-  assetIds:
+  assets:
     - fylkesting_viken_no
     - fylkesting_rogfk_no
     - fylkesting_flais_no
